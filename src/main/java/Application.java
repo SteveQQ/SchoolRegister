@@ -12,6 +12,6 @@ public class Application {
 
     public static void main(String[] args) {
         Application app = new Application();
-        Application.database.selectAllSubjects();
+        Application.database.selectAllSubjects(DbManager.SUBJECTS_TABLE, null);
     }
 }
