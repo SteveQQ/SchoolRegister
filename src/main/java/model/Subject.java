@@ -12,6 +12,10 @@ public class Subject {
         this.subjectName = subjectName;
     }
 
+    public Subject(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
     public Integer getId() {
         return id;
     }

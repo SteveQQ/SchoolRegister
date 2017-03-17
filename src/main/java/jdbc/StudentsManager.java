@@ -1,98 +1,26 @@
 package jdbc;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import model.Student;
-import model.Subject;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
- * Created by SteveQ on 2017-03-15.
+ * Created by SteveQ on 2017-03-17.
  */
-public class DbManager {
-    private Properties prop = new Properties();
-    private PreparedStatement preparedStatement;
-    private ResultSet resultSet;
+public class StudentsManager {
 
     public static final String STUDENTS_TABLE = "students_table";
     public static final String MOCK_STUDENTS_TABLE = "students_table2";
-    public static final String SUBJECTS_TABLE = "subjects_table";
-    public static final String MOCK_SUBJECTS_TABLE = "subjects_table2";
-    public static final String SUBJECTS_SUBSCRIPTIONS_TABLE = "subjects_subscriptions_table";
-
-
-    public DbManager(){
-        try {
-            prop.load(DbManager.class.getClassLoader().getResourceAsStream("config.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Connection getConnection(){
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sql_register", prop.getProperty("dbuser"), prop.getProperty("dbpassword"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
-
-    public List<Subject> selectAllSubjects(String tableName, Connection c){
-        Connection conn = null;
-        if(c == null){
-            conn = getConnection();
-        } else {
-            conn = c;
-        }
-        List<Subject> result = new ArrayList<Subject>();
-        Statement stat = null;
-        ResultSet res = null;
-        try {
-            stat = conn.createStatement();
-            res = stat.executeQuery("SELECT * FROM " + tableName);
-            if(res.last()) {
-                res.beforeFirst();
-                while (res.next()) {
-                    result.add(new Subject(res.getInt("Id"), res.getString("SubjectName")));
-                }
-            } else {
-                throw new IllegalStateException("No data in [subjects_table]");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                if(stat != null) {
-                    stat.close();
-                }
-                if(res != null) {
-                    res.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
 
     public Student createStudent(Student student, String tableName, Connection c, Boolean close){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -142,7 +70,7 @@ public class DbManager {
     public List<Student> selectAllStudents(String tableName, Connection c){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -192,7 +120,7 @@ public class DbManager {
     public Student selectStudentById(Integer id, String tableName, Connection c){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -242,7 +170,7 @@ public class DbManager {
     public List<Student> selectStudentsByFullName(String firstName, String lastName, String tableName , Connection c){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -292,7 +220,7 @@ public class DbManager {
     public boolean updateStudentInfo(Student student, String tableName, Connection c, Boolean close){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -334,10 +262,10 @@ public class DbManager {
         return result == 1;
     }
 
-    public boolean deleteStudent(Integer Id, String tableName, Connection c, Boolean close){
+    public boolean deleteStudent(Integer id, String tableName, Connection c, Boolean close){
         Connection conn = null;
         if(c == null){
-            conn = getConnection();
+            conn = Access.getConnection();
         } else {
             conn = c;
         }
@@ -348,7 +276,7 @@ public class DbManager {
         try {
             stat = conn.createStatement();
             result = stat.executeUpdate("delete from " + tableName + " where " +
-                    "Id = " + Id + ";"
+                    "Id = " + id + ";"
             );
         } catch (SQLException e) {
             e.printStackTrace();
@@ -371,27 +299,8 @@ public class DbManager {
     }
 
     //---------------TEST PURPOSES METHODS----------------
-
-    public Connection createMockSubjectTable(){
-        Connection conn = getConnection();
-        Statement stat = null;
-        try {
-            stat = conn.createStatement();
-            stat.execute("CREATE TEMPORARY TABLE IF NOT EXISTS " + MOCK_SUBJECTS_TABLE + " (Id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, SubjectName VARCHAR(30) NOT NULL);");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            return null;
-        }
-        return conn;
-    }
-
     public Connection createMockStudentsTable(){
-        Connection conn = getConnection();
+        Connection conn = Access.getConnection();
         Statement stat = null;
         try {
             stat = conn.createStatement();
