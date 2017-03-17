@@ -108,4 +108,23 @@ public class Student {
     public void setHouseNumber(Integer houseNumber) {
         this.houseNumber = houseNumber;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Student student = (Student) o;
+
+        if (Id != null ? !Id.equals(student.Id) : student.Id != null) return false;
+        if (firstName != null ? !firstName.equals(student.firstName) : student.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(student.lastName) : student.lastName != null) return false;
+        if (dateOfBirth != null ? !dateOfBirth.equals(student.dateOfBirth) : student.dateOfBirth != null) return false;
+        if (parentEmail != null ? !parentEmail.equals(student.parentEmail) : student.parentEmail != null) return false;
+        if (street != null ? !street.equals(student.street) : student.street != null) return false;
+        if (city != null ? !city.equals(student.city) : student.city != null) return false;
+        if (postalCode != null ? !postalCode.equals(student.postalCode) : student.postalCode != null) return false;
+        return houseNumber != null ? houseNumber.equals(student.houseNumber) : student.houseNumber == null;
+
+    }
 }

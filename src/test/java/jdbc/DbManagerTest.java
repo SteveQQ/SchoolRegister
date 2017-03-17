@@ -48,7 +48,7 @@ public class DbManagerTest {
     public void createStudentCompleted() throws Exception {
         Connection conn = manager.createMockStudentsTable();
         if(conn != null){
-            Integer result = manager.createStudent(new Student(
+            Student result = manager.createStudent(new Student(
                     "John",
                     "Doe",
                     "1993-01-01",
@@ -61,7 +61,7 @@ public class DbManagerTest {
                     DbManager.MOCK_STUDENTS_TABLE,
                     conn,
                     true);
-            assertTrue(result > 0);
+            assertTrue(result.getId() != null);
         }
     }
 
@@ -132,6 +132,129 @@ public class DbManagerTest {
                     false);
             List<Student> result = manager.selectStudentsByFullName("John", "Doe", DbManager.MOCK_STUDENTS_TABLE, conn);
             assertTrue(result.size() == 2);
+        }
+    }
+
+    @Test
+    public void selectingStudentById() throws Exception {
+        Connection conn = manager.createMockStudentsTable();
+        if(conn != null){
+            Student student1 = manager.createStudent(new Student(
+                            "John",
+                            "Doe",
+                            "1993-01-01",
+                            "asdf@asd.com",
+                            "sunflower street",
+                            "Warsaw",
+                            "12-123",
+                            12
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+            Student student2 = manager.createStudent(new Student(
+                            "John",
+                            "Doe",
+                            "1993-02-02",
+                            "sdfg@asd.com",
+                            "rasberry street",
+                            "Warsaw",
+                            "78-123",
+                            15
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+            Student result = manager.selectStudentById(student1.getId(), DbManager.MOCK_STUDENTS_TABLE, conn);
+            assertTrue(result.equals(student1));
+        }
+    }
+
+    @Test
+    public void studentUpdatedCorrectly() throws Exception {
+        Connection conn = manager.createMockStudentsTable();
+        if(conn != null) {
+            Student newStudent = manager.createStudent(new Student(
+                            "John",
+                            "Doe",
+                            "1993-01-01",
+                            "asdf@asd.com",
+                            "sunflower street",
+                            "Warsaw",
+                            "12-123",
+                            12
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+
+            newStudent.setFirstName("Jack");
+            newStudent.setCity("Lodz");
+            Boolean result = manager.updateStudentInfo(newStudent, DbManager.MOCK_STUDENTS_TABLE, conn, false);
+            Student updatedStudent = manager.selectStudentById(newStudent.getId(), DbManager.MOCK_STUDENTS_TABLE, conn);
+            assertTrue(updatedStudent.equals(newStudent));
+        }
+
+    }
+
+    @Test
+    public void selectAllStudentsFromTable() throws Exception {
+        Connection conn = manager.createMockStudentsTable();
+        if(conn != null){
+            manager.createStudent(new Student(
+                            "John",
+                            "Doe",
+                            "1993-01-01",
+                            "asdf@asd.com",
+                            "sunflower street",
+                            "Warsaw",
+                            "12-123",
+                            12
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+            manager.createStudent(new Student(
+                            "Mike",
+                            "Hike",
+                            "1993-02-02",
+                            "sdfg@asd.com",
+                            "rasberry street",
+                            "Warsaw",
+                            "78-123",
+                            15
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+            List<Student> result = manager.selectAllStudents(DbManager.MOCK_STUDENTS_TABLE, conn);
+            assertTrue(result.size() == 2);
+        }
+
+    }
+
+    @Test
+    public void studentDeleteCorrect() throws Exception {
+        Connection conn = manager.createMockStudentsTable();
+        if(conn != null) {
+            Student newStudent = manager.createStudent(new Student(
+                            "John",
+                            "Doe",
+                            "1993-01-01",
+                            "asdf@asd.com",
+                            "sunflower street",
+                            "Warsaw",
+                            "12-123",
+                            12
+                    ),
+                    DbManager.MOCK_STUDENTS_TABLE,
+                    conn,
+                    false);
+
+            Boolean result = manager.deleteStudent(newStudent.getId(), DbManager.MOCK_STUDENTS_TABLE, conn, false);
+            assertTrue(result);
+            exception.expect(IllegalStateException.class);
+            manager.selectAllStudents(DbManager.MOCK_STUDENTS_TABLE, conn);
         }
     }
 }

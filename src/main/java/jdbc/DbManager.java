@@ -89,7 +89,7 @@ public class DbManager {
         return result;
     }
 
-    public Integer createStudent(Student student, String tableName, Connection c, Boolean close){
+    public Student createStudent(Student student, String tableName, Connection c, Boolean close){
         Connection conn = null;
         if(c == null){
             conn = getConnection();
@@ -135,7 +135,108 @@ public class DbManager {
                 e.printStackTrace();
             }
         }
-        return lastId;
+        student.setId(lastId);
+        return student;
+    }
+
+    public List<Student> selectAllStudents(String tableName, Connection c){
+        Connection conn = null;
+        if(c == null){
+            conn = getConnection();
+        } else {
+            conn = c;
+        }
+
+        List<Student> result = new ArrayList<Student>();
+        Statement stat = null;
+        ResultSet res = null;
+        try {
+            stat = conn.createStatement();
+            res = stat.executeQuery("SELECT * FROM " + tableName);
+            if(res.last()) {
+                res.beforeFirst();
+                while (res.next()) {
+                    result.add(new Student(
+                            res.getInt("Id"),
+                            res.getString("FirstName"),
+                            res.getString("LastName"),
+                            res.getString("DateOfBirth"),
+                            res.getString("ParentEmail"),
+                            res.getString("Street"),
+                            res.getString("City"),
+                            res.getString("PostalCode"),
+                            res.getInt("HouseNumber")
+                    ));
+                }
+            } else {
+                throw new IllegalStateException("No data in [subjects_table]");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+                if(stat != null) {
+                    stat.close();
+                }
+                if(res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public Student selectStudentById(Integer id, String tableName, Connection c){
+        Connection conn = null;
+        if(c == null){
+            conn = getConnection();
+        } else {
+            conn = c;
+        }
+
+        Student result = null;
+        Statement stat = null;
+        ResultSet res = null;
+        try {
+            stat = conn.createStatement();
+            res = stat.executeQuery("SELECT * FROM " + tableName + " WHERE Id=" + id );
+            if(res.last()) {
+                res.beforeFirst();
+                while (res.next()) {
+                    result = new Student(
+                            res.getInt("Id"),
+                            res.getString("FirstName"),
+                            res.getString("LastName"),
+                            res.getString("DateOfBirth"),
+                            res.getString("ParentEmail"),
+                            res.getString("Street"),
+                            res.getString("City"),
+                            res.getString("PostalCode"),
+                            res.getInt("HouseNumber")
+                    );
+                }
+            } else {
+                throw new IllegalStateException("No data in [subjects_table]");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+                if(stat != null) {
+                    stat.close();
+                }
+                if(res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     public List<Student> selectStudentsByFullName(String firstName, String lastName, String tableName , Connection c){
@@ -186,6 +287,87 @@ public class DbManager {
             }
         }
         return result;
+    }
+
+    public boolean updateStudentInfo(Student student, String tableName, Connection c, Boolean close){
+        Connection conn = null;
+        if(c == null){
+            conn = getConnection();
+        } else {
+            conn = c;
+        }
+
+        Statement stat = null;
+        ResultSet res = null;
+        int result = 0;
+        try {
+            stat = conn.createStatement();
+            result = stat.executeUpdate("update " + tableName + " set " +
+                    "FirstName = \'" + student.getFirstName() + "\', " +
+                    "LastName = \'" + student.getLastName() + "\', " +
+                    "DateOfBirth = \'" + student.getDateOfBirth() + "\', " +
+                    "ParentEmail = \'" + student.getParentEmail() + "\', " +
+                    "Street = \'" + student.getStreet() + "\', " +
+                    "City = \'" + student.getCity() + "\', " +
+                    "PostalCode = \'" + student.getPostalCode() + "\', " +
+                    "HouseNumber = \'" + student.getHouseNumber() + "\' " +
+                    "where id = " + student.getId() +
+                    ";"
+            );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(close) {
+                    conn.close();
+                }
+                if(stat != null) {
+                    stat.close();
+                }
+                if(res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result == 1;
+    }
+
+    public boolean deleteStudent(Integer Id, String tableName, Connection c, Boolean close){
+        Connection conn = null;
+        if(c == null){
+            conn = getConnection();
+        } else {
+            conn = c;
+        }
+
+        Statement stat = null;
+        ResultSet res = null;
+        int result = 0;
+        try {
+            stat = conn.createStatement();
+            result = stat.executeUpdate("delete from " + tableName + " where " +
+                    "Id = " + Id + ";"
+            );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(close) {
+                    conn.close();
+                }
+                if(stat != null) {
+                    stat.close();
+                }
+                if(res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result == 1;
     }
 
     //---------------TEST PURPOSES METHODS----------------
