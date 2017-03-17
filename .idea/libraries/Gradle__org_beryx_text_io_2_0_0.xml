@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.beryx:text-io:2.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.beryx/text-io/2.0.0/d7624d8897850c674e529370d8c1d0e4d85bf4cb/text-io-2.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.beryx/text-io/2.0.0/79b53775c6314e86e752a676ca234f3780092109/text-io-2.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

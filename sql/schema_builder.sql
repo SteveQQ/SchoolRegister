@@ -26,16 +26,12 @@ create table subjects_table
 drop table if exists subjects_subscriptions_table;
 create table if not exists subjects_subscriptions_table
 (
+	Id integer not null auto_increment primary key,
 	StudentId integer,
     SubjectId integer,
-    Grade1 integer,
-    Grade2 integer,
-    Grade3 integer,
-    Grade4 integer,
-    Grade5 integer,
+    Grade integer,
     constraint foreign key (StudentId) references students_table(Id),
     constraint foreign key (SubjectId) references subjects_table(Id),
-    constraint primary key (StudentId, SubjectId)
 );
 
 drop trigger if exists validate_parent_email;
